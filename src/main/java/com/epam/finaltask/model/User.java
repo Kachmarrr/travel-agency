@@ -4,89 +4,43 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
+@Table(name = "users")
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
+	@Id
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+	@Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
     private UUID id;
 
+	@Column(nullable = false)
     private String username;
 
+	@Column(nullable = false)
     private String password;
 
+	@Enumerated(EnumType.STRING)
+	@Column(length = 50)
     private Role role;
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Voucher> vouchers;
 
+	@Column(name = "phone_number")
     private String phoneNumber;
 
+	@Column(precision = 12, scale = 2)
     private BigDecimal balance;
 
+	@Column(name = "active", nullable = false)
     private boolean active;
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	public List<Voucher> getVouchers() {
-		return vouchers;
-	}
-
-	public void setVouchers(List<Voucher> vouchers) {
-		this.vouchers = vouchers;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public BigDecimal getBalance() {
-		return balance;
-	}
-
-	public void setBalance(BigDecimal balance) {
-		this.balance = balance;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-    
 }
