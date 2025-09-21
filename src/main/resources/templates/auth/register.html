@@ -1,0 +1,12 @@
+<form th:action="@{/auth/register}" th:object="${userDTO}" method="post">
+    <input type="text" th:field="*{username}" placeholder="Username (login)"/>
+    <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username error</div>
+
+    <input type="email" th:field="*{email}" placeholder="Email"/>
+    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+    <input type="password" th:field="*{password}" placeholder="Password"/>
+    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+    <button type="submit">Register</button>
+</form>

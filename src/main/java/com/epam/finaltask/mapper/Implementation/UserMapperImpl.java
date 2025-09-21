@@ -2,17 +2,20 @@ package com.epam.finaltask.mapper.Implementation;
 
 import com.epam.finaltask.dto.UserDTO;
 import com.epam.finaltask.mapper.UserMapper;
-import com.epam.finaltask.mapper.VoucherMapper;
+import com.epam.finaltask.mapper.TourMapper;
 import com.epam.finaltask.model.User;
+import com.epam.finaltask.model.enums.Role;
 import org.springframework.stereotype.Component;
+import static com.epam.finaltask.mapper.Implementation.TourMapperImpl.*;
+import java.math.BigDecimal;
 
 @Component
 public class UserMapperImpl implements UserMapper {
 
-    private final VoucherMapper voucherMapper;
+    private TourMapper tourMapper;
 
-    public UserMapperImpl(VoucherMapper voucherMapper) {
-        this.voucherMapper = voucherMapper;
+    public UserMapperImpl(TourMapper tourMapper) {
+        this.tourMapper = tourMapper;
     }
 
     @Override
@@ -20,10 +23,14 @@ public class UserMapperImpl implements UserMapper {
         if (dto == null) return null;
 
         User user = User.builder()
+                .id(dto.getId())
                 .username(dto.getUsername())
-                .password(dto.getPassword())
-                .phoneNumber(dto.getPhoneNumber())
-                .active(Boolean.TRUE.equals(dto.isActive()))
+//               .password(dto.getPassword()) -> map without password(for security, because password can be logged)
+                .email(dto.getEmail())
+                .role(dto.getRole())
+                .balance(BigDecimal.valueOf(dto.getBalance()))
+                .tours(dto.getTours().stream().map(tourDTO -> tourMapper.toTour(tourDTO)).toList())
+//                .active(Boolean.TRUE.equals(dto.isActive()))
                 .build();
 
         return user;
@@ -34,12 +41,14 @@ public class UserMapperImpl implements UserMapper {
         if (user == null) return null;
 
         UserDTO userDTO = UserDTO.builder()
+                .id(user.getId())
                 .username(user.getUsername())
-                .password(user.getPassword()) // чи варто так робити ?
-                .role(user.getRole() != null ? user.getRole().name() : null)
-                .phoneNumber(user.getPhoneNumber())
-                .active(user.isActive())
-                .balance(user.getBalance() != null ? user.getBalance().doubleValue() : null)
+//                .password(user.getPassword()) // чи варто так робити ?
+                .email(user.getEmail())
+                .role(user.getRole())
+                .balance(user.getBalance().doubleValue())
+                .tours(user.getTours().stream().map(tour -> tourMapper.toTourDTO(tour)).toList())
+//                .active(user.isActive())
                 .build();
 
         return userDTO;

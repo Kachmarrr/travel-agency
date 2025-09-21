@@ -1,9 +1,7 @@
 package com.epam.finaltask.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
@@ -18,14 +16,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class VoucherDTO {
+public class TourDTO {
 
-    private String id;
+    private Long id;
 
 	@NotBlank(message = "title must be blank")
     private String title;
 
+    @NotBlank(message = "description is must be blank")
     private String description;
 
 	@NotNull(message = "price must be required")
@@ -44,7 +42,7 @@ public class VoucherDTO {
 
     private LocalDate evictionDate;
 
-    private UUID userId;
+    private Long userId;
 
 	@JsonProperty("isHot")
     private Boolean isHot;

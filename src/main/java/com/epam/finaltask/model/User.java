@@ -4,43 +4,40 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import com.epam.finaltask.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
 
 	@Id
-	@GeneratedValue(generator = "UUID")
-	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-	@Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
-    private UUID id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(nullable = false)
+	@Column(name = "username", nullable = false)
     private String username;
 
-	@Column(nullable = false)
+	@Column(name = "password", nullable = false)
     private String password;
 
+	@Column(name = "email", nullable = false, unique = true)
+	private String email;
+
 	@Enumerated(EnumType.STRING)
-	@Column(length = 50)
+	@Column(name = "role", length = 50)
     private Role role;
 
+	@Column(name = "balance", precision = 12, scale = 2)
+	private BigDecimal balance;
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Voucher> vouchers;
+	private List<Tour> tours;
 
-	@Column(name = "phone_number")
-    private String phoneNumber;
-
-	@Column(precision = 12, scale = 2)
-    private BigDecimal balance;
-
-	@Column(name = "active", nullable = false)
-    private boolean active;
 }
