@@ -1,35 +1,84 @@
 package com.epam.finaltask.controller;
 
-import com.epam.finaltask.repository.TourRepository;
+import com.epam.finaltask.DTO.TourDTO;
+import com.epam.finaltask.service.TourService;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/tours")
 public class TourController {
 
-    private final TourRepository tourRepository;
+    private final TourService tourService;
 
-    public TourController(TourRepository tourRepository) {
-        this.tourRepository = tourRepository;
+    public TourController(TourService tourService) {
+        this.tourService = tourService;
     }
 
-    // тепер буде відповідати GET /tours
     @GetMapping
     public String list(Model model) {
-        var tours = tourRepository.findAll();
-        System.out.println("DEBUG: tours count = " + tours.size());
+        var tours = tourService.findAll();
         model.addAttribute("tours", tours);
         return "tours/list";
     }
 
-    // деталі туру: GET /tours/{id}
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
-        model.addAttribute("tour", tourRepository.findById(id).orElse(null));
+         TourDTO tourDTO = tourService.findById(id);
+
+        model.addAttribute("tour", tourDTO);
         return "tours/detail";
+    }
+
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/create")
+    public String createForm(Model model) {
+        model.addAttribute("tourDTO", new TourDTO());
+        return "tours/create";
+    }
+
+    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping("/create")
+    public String create(@ModelAttribute("tourDTO") TourDTO tourDTO) {
+
+        tourService.create(tourDTO);
+
+        return "redirect:/dashboard";
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @GetMapping("/edit/{id}")
+    public String editForm(@PathVariable Long id, Model model) {
+        TourDTO tour = tourService.findById(id);
+        model.addAttribute("tour", tour);
+        return "tours/edit";
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PostMapping("/update/{id}")
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("tour") TourDTO tourDTO,
+                         BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return "tours/edit";
+        }
+
+        tourDTO.setId(id);
+        tourService.update(tourDTO);
+        return "redirect:/dashboard";
+    }
+
+    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable Long id) {
+
+        tourService.delete(id);
+        return "redirect:/dashboard";
+
     }
 }

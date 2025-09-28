@@ -1,0 +1,60 @@
+<!-- src/main/resources/templates/login.html -->
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<section layout:fragment="body">
+    <div class="page">
+        <div class="login-wrapper">
+            <div class="brand">
+                <img src="/images/logo.png" alt="logo" class="brand__logo" onerror="this.style.display='none'">
+                <h1 class="brand__title">Welcome back</h1>
+                <p class="brand__subtitle">Sign in to continue to your account</p>
+            </div>
+
+
+            <div class="card">
+                <div th:if="${param.error}" class="alert alert--danger">
+                    Invalid username or password.
+                </div>
+                <div th:if="${param.logout}" class="alert alert--success">
+                    You have been logged out.
+                </div>
+
+
+                <form class="form" method="post" th:action="@{/auth/login}">
+                    <div class="form-row">
+                        <label class="form-label" for="username">Username</label>
+                        <input id="username" name="username" type="text" class="form-input" placeholder="Username" required>
+                    </div>
+
+
+                    <div class="form-row">
+                        <label class="form-label" for="password">Password</label>
+                        <input id="password" name="password" type="password" class="form-input" placeholder="Password" required>
+                    </div>
+
+
+                    <div class="form-actions">
+                        <a th:href="@{/auth/register}" class="link">Don't have an account? Register</a>
+                        <button type="submit" class="btn">Login</button>
+                    </div>
+                </form>
+
+
+                <div class="card-footer">
+                    <a href="#" class="text-small">Forgot password?</a>
+                </div>
+            </div>
+<!--            <div class="attribution">Travel Agency</div>-->
+        </div>
+    </div>
+</section>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${tour.title} + ' — Деталі'">Tour Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="create-card" style="margin-top: 1.5rem;">
+
+        <!-- Flash повідомлення -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Заголовок -->
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <h1 class="card-title" th:text="${tour.title}">Tour Title</h1>
+
+            <!-- Вартість -->
+            <div style="margin-left:auto; text-align:right;">
+                <div style="font-size:0.95rem; color:#6c757d;">Ціна</div>
+                <div class="tour-price" th:text="${tour.price != null ? tour.price + ' ₴' : '—'}">0 ₴</div>
+            </div>
+        </div>
+
+        <p class="card-text" style="margin-top:10px;" th:text="${tour.description}">Tour description</p>
+
+        <!-- Деталі списком -->
+        <div style="margin-top:16px; display:block;">
+            <div class="list-group-item">
+                <strong>Тип туру:</strong>
+                <span th:text="${tour.tourType != null ? tour.tourType : '—'}">—</span>
+            </div>
+            <div class="list-group-item">
+                <strong>Готель:</strong>
+                <span th:text="${tour.hotelType != null ? tour.hotelType : '—'}">—</span>
+            </div>
+            <div class="list-group-item">
+                <strong>Трансфер:</strong>
+                <span th:text="${tour.transferType != null ? tour.transferType : '—'}">—</span>
+            </div>
+            <div class="list-group-item">
+                <strong>Статус:</strong>
+                <span th:text="${tour.status != null ? tour.status : '—'}">—</span>
+            </div>
+            <div class="list-group-item">
+                <strong>Прибуття:</strong>
+                <span th:text="${tour.arrivalDate != null ? tour.arrivalDate : '—'}">—</span>
+            </div>
+            <div class="list-group-item">
+                <strong>Виїзд:</strong>
+                <span th:text="${tour.evictionDate != null ? tour.evictionDate : '—'}">—</span>
+            </div>
+            <div class="list-group-item">
+                <strong>Hot tour:</strong>
+                <span th:text="${tour.isHot}">false</span>
+            </div>
+        </div>
+
+        <!-- Дії: назад, швидке бронювання (POST), форма створення броні -->
+        <div class="form-actions" style="margin-top:18px; align-items:center;">
+            <a th:href="@{/dashboard}" class="btn btn-secondary">Back to tour list</a>
+
+            <!-- Швидке бронювання через POST (якщо у вас є endpoint на /bookings/{id} ) -->
+            <form th:action="@{|/booking/create/${tour.id}|}" method="post" style="display:inline-block;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-book">Book now</button>
+            </form>
+
+        </div>
+
+        <!-- Дрібний футер -->
+        <div class="card-footer" style="margin-top:14px;">
+            Після бронювання ви знайдете своє замовлення у профілі — розділ «My Booked Tours».
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

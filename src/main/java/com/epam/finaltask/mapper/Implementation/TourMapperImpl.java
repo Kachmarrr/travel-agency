@@ -1,11 +1,8 @@
 package com.epam.finaltask.mapper.Implementation;
 
-import com.epam.finaltask.dto.TourDTO;
+import com.epam.finaltask.DTO.TourDTO;
 import com.epam.finaltask.mapper.TourMapper;
 import com.epam.finaltask.model.Tour;
-import com.epam.finaltask.model.enums.HotelType;
-import com.epam.finaltask.model.enums.TourStatus;
-import com.epam.finaltask.model.enums.TourType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -18,12 +15,14 @@ public class TourMapperImpl implements TourMapper {
         if (dto == null) return null;
 
         Tour tour = Tour.builder()
+                .id(dto.getId())
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .price(BigDecimal.valueOf(dto.getPrice()))
-                .tourType(TourType.valueOf(dto.getTourType()))
-                .hotelType(HotelType.valueOf(dto.getHotelType()))
-                .status(TourStatus.valueOf(dto.getStatus()))
+                .transferType(dto.getTransferType())
+                .tourType(dto.getTourType())
+                .hotelType(dto.getHotelType())
+                .status(dto.getStatus())
                 .arrivalDate(dto.getArrivalDate())
                 .evictionDate(dto.getEvictionDate())
                 .isHot(Boolean.TRUE.equals(dto.getIsHot()))
@@ -36,18 +35,21 @@ public class TourMapperImpl implements TourMapper {
     public TourDTO toTourDTO(Tour tour) {
         if (tour == null) return null;
 
-        TourDTO tourDTO = TourDTO.builder()
+        Long userId = (tour.getUser() != null) ? tour.getUser().getId() : null;
+
+        return TourDTO.builder()
+                .id(tour.getId())
                 .title(tour.getTitle())
                 .description(tour.getDescription())
-                .price(Double.valueOf(String.valueOf(tour.getPrice())))
-                .tourType(String.valueOf(tour.getTourType()))
-                .hotelType(String.valueOf(tour.getHotelType()))
-                .status(String.valueOf(tour.getStatus()))
+                .price(tour.getPrice() != null ? tour.getPrice().doubleValue() : null)
+                .transferType(tour.getTransferType())
+                .tourType(tour.getTourType())
+                .hotelType(tour.getHotelType())
+                .status(tour.getStatus())
                 .arrivalDate(tour.getArrivalDate())
                 .evictionDate(tour.getEvictionDate())
-                .isHot(tour.isHot())
+                .isHot(Boolean.TRUE.equals(tour.isHot()))
+                .userId(userId)
                 .build();
-
-        return tourDTO;
     }
 }

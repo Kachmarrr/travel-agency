@@ -31,8 +31,10 @@ public class User {
 	private String email;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "role", length = 50)
-    private Role role;
+	@Column(name = "role", length = 50, nullable = false)
+	@Builder.Default
+	private Role role = Role.USER;
+
 
 	@Column(name = "balance", precision = 12, scale = 2)
 	private BigDecimal balance;

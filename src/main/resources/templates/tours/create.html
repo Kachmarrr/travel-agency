@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Tour</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <a class="navbar-brand" th:href="@{/}">Travel Agency</a>
+        <div class="navbar-right">
+            <a th:href="@{/user/profile}" class="btn btn-profile">Profile</a>
+            <a th:href="@{/}" class="btn btn-logout">Log out</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container create-tour">
+
+    <h1>Create New Tour</h1>
+
+    <div sec:authorize="hasRole('MANAGER')">
+
+        <div class="card create-card">
+            <form th:action="@{/tours/create}" th:object="${tourDTO}" method="post">
+
+                <!-- CSRF token (потрібно при Spring Security) -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <!-- Загальна сітка: дві колонки на великих екранах -->
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input class="form-input" type="text" id="title" th:field="*{title}" placeholder="Tour title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input class="form-input" type="number" id="price" th:field="*{price}" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="form-group full" style="grid-column: 1 / -1;">
+                        <label for="description">Description</label>
+                        <textarea class="form-input" id="description" th:field="*{description}" placeholder="Short description" required></textarea>
+                    </div>
+
+                    <!-- TourType select -->
+                    <div class="form-group">
+                        <label for="tourType">Tour Type</label>
+                        <select class="form-input" id="tourType" th:field="*{tourType}" required>
+                            <option value="">-- Select tour type --</option>
+                            <option th:each="t : ${T(com.epam.finaltask.model.enums.TourType).values()}"
+                                    th:value="${t.name()}"
+                                    th:text="${#strings.capitalize(#strings.replace(t.name(), '_',' ').toLowerCase())}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- TransferType select -->
+                    <div class="form-group">
+                        <label for="transferType">Transfer Type</label>
+                        <select class="form-input" id="transferType" th:field="*{transferType}" required>
+                            <option value="">-- Select transfer type --</option>
+                            <option th:each="tr : ${T(com.epam.finaltask.model.enums.TransferType).values()}"
+                                    th:value="${tr.name()}"
+                                    th:text="${#strings.capitalize(#strings.replace(tr.name(), '_',' ').toLowerCase())}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- HotelType select -->
+                    <div class="form-group">
+                        <label for="hotelType">Hotel Type</label>
+                        <select class="form-input" id="hotelType" th:field="*{hotelType}" required>
+                            <option value="">-- Select hotel type --</option>
+                            <option th:each="h : ${T(com.epam.finaltask.model.enums.HotelType).values()}"
+                                    th:value="${h.name()}"
+                                    th:text="${#strings.capitalize(#strings.replace(h.name(), '_',' ').toLowerCase())}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Status select -->
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select class="form-input" id="status" th:field="*{status}" required>
+                            <option value="">-- Select status --</option>
+                            <option th:each="s : ${T(com.epam.finaltask.model.enums.TourStatus).values()}"
+                                    th:value="${s.name()}"
+                                    th:text="${#strings.capitalize(#strings.replace(s.name(), '_',' ').toLowerCase())}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="arrivalDate">Arrival Date</label>
+                        <input class="form-input" type="date" id="arrivalDate" th:field="*{arrivalDate}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="evictionDate">Eviction Date</label>
+                        <input class="form-input" type="date" id="evictionDate" th:field="*{evictionDate}" required>
+                    </div>
+
+                    <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" id="isHot" th:field="*{isHot}" />
+                        <label for="isHot" style="margin:0;">Hot Tour</label>
+                    </div>
+
+                    <!-- Hidden userId (залишаємо як було) -->
+                    <input type="hidden" th:field="*{userId}" />
+
+                </div> <!-- /.form-grid -->
+
+                <div style="margin-top:16px; display:flex; gap:12px; align-items:center;">
+                    <button type="submit" class="btn btn-primary">Create Tour</button>
+                    <a th:href="@{/tours}" class="btn btn-outline-secondary" style="text-decoration:none; padding:8px 12px; border-radius:8px;">Cancel</a>
+                </div>
+
+            </form>
+        </div> <!-- /.card -->
+
+    </div>
+
+    <div sec:authorize="!hasRole('MANAGER')">
+        <p class="no-access">You do not have permission to access this page.</p>
+    </div>
+
+</div>
+
+</body>
+</html>

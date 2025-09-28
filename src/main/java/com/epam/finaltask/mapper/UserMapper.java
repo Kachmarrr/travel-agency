@@ -1,6 +1,6 @@
 package com.epam.finaltask.mapper;
 
-import com.epam.finaltask.dto.UserDTO;
+import com.epam.finaltask.DTO.UserDTO;
 import com.epam.finaltask.model.User;
 
 public interface UserMapper {

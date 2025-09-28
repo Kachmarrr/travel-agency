@@ -1,11 +1,9 @@
-package com.epam.finaltask.dto;
+package com.epam.finaltask.DTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.epam.finaltask.model.Tour;
-
 import com.epam.finaltask.model.enums.Role;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,22 +21,20 @@ public class UserDTO {
 	@NotBlank(message = "username must not be blank")
 	private String username;
 
-	@NotBlank()
-	@Size(min = 6, message = "password must have five(5) chars")
+	@NotBlank
+	@Size(min = 6, message = "Password must be at least 6 characters")
 	private String password;
 
 	@NotBlank(message = "email is required")
 	@Email(message = "Invalid email format")
 	private String email;
 
-	@NotBlank(message = "role is required")
 	private Role role;
 
-	@PositiveOrZero(message = "balance must be zero or positive")
-	private Double balance;
+	@Builder.Default
+	private Double balance = 0.0;
 
-	private List<TourDTO> tours;
-
-//	@NotNull
-//	private boolean active;
+	// Ініціалізація порожнім списком, щоб уникнути NPE при .stream()
+	@Builder.Default
+	private List<TourDTO> tours = new ArrayList<>();
 }

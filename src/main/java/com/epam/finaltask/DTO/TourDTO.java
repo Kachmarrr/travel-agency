@@ -1,5 +1,9 @@
-package com.epam.finaltask.dto;
+package com.epam.finaltask.DTO;
 
+import com.epam.finaltask.model.enums.HotelType;
+import com.epam.finaltask.model.enums.TourStatus;
+import com.epam.finaltask.model.enums.TourType;
+import com.epam.finaltask.model.enums.TransferType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -30,13 +33,13 @@ public class TourDTO {
 	@PositiveOrZero(message = "price must be zero or positive")
     private Double price;
 
-    private String tourType;
+    private TourType tourType;
 
-    private String transferType;
+    private TransferType transferType;
 
-    private String hotelType;
+    private HotelType hotelType;
 
-    private String status;
+    private TourStatus status;
 
     private LocalDate arrivalDate;
 

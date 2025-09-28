@@ -1,12 +1,11 @@
 package com.epam.finaltask.mapper.Implementation;
 
-import com.epam.finaltask.dto.UserDTO;
+import com.epam.finaltask.DTO.UserDTO;
 import com.epam.finaltask.mapper.UserMapper;
 import com.epam.finaltask.mapper.TourMapper;
 import com.epam.finaltask.model.User;
-import com.epam.finaltask.model.enums.Role;
 import org.springframework.stereotype.Component;
-import static com.epam.finaltask.mapper.Implementation.TourMapperImpl.*;
+
 import java.math.BigDecimal;
 
 @Component

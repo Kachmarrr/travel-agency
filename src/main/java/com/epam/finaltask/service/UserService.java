@@ -1,8 +1,6 @@
 package com.epam.finaltask.service;
 
-import java.util.UUID;
-
-import com.epam.finaltask.dto.UserDTO;
+import com.epam.finaltask.DTO.UserDTO;
 import com.epam.finaltask.model.enums.Role;
 
 public interface UserService {
@@ -16,5 +14,7 @@ public interface UserService {
     void changeUserRole(Long userId, Role role);
 
     UserDTO getUserById(Long id);
+
+    public UserDTO getUserByEmail(String email);
 
 }
