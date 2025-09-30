@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.epam.finaltask.model.Tour;
+import com.epam.finaltask.model.enums.TourStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.epam.finaltask.model.enums.HotelType;
@@ -17,4 +18,5 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
     List<Tour> findAllByTransferType(TransferType transferType);
     List<Tour> findAllByPrice(BigDecimal price);
     List<Tour> findAllByHotelType(HotelType hotelType);
+    List<Tour> findAllByStatus(TourStatus tourStatus);
 }

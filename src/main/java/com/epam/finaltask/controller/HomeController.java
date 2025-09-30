@@ -1,6 +1,8 @@
 package com.epam.finaltask.controller;
 
 import com.epam.finaltask.DTO.UserDTO;
+import com.epam.finaltask.model.enums.Role;
+import com.epam.finaltask.model.enums.TourStatus;
 import com.epam.finaltask.service.BookingService;
 import com.epam.finaltask.service.TourService;
 import com.epam.finaltask.service.UserService;
@@ -26,7 +28,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("tours", tourService.findAll());
+        model.addAttribute("tours", tourService.findAllByStatus(TourStatus.AVAILABLE));
         return "index";
     }
 
@@ -36,7 +38,13 @@ public class HomeController {
         UserDTO userDTO = userService.getUserByUsername(principal.getName());
         model.addAttribute("user", userDTO);
 
-        model.addAttribute("tours", tourService.findAll());
+        boolean isManager = userDTO.getRole().equals(Role.MANAGER);
+
+        if (isManager) {
+            model.addAttribute("tours", tourService.findAll());
+        } else {
+            model.addAttribute("tours", tourService.findAllByStatus(TourStatus.AVAILABLE));
+        }
 
         return "dashboard";
     }

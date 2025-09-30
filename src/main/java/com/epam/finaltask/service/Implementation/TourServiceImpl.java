@@ -241,4 +241,15 @@ public class TourServiceImpl implements TourService {
         log.info("Found {} tours in total", tours.size());
         return tours;
     }
+
+    @Override
+    public List<TourDTO> findAllByStatus(TourStatus tourStatus) {
+        log.info("Find all Available tours attempt");
+        List<TourDTO> tours = tourRepository.findAllByStatus(tourStatus).stream()
+                .map(tourMapper::toTourDTO)
+                .toList();
+        log.info("Found {} tours in total", tours.size());
+        return tours;
+
+    }
 }

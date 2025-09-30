@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.epam.finaltask.DTO.TourDTO;
 import com.epam.finaltask.model.enums.HotelType;
+import com.epam.finaltask.model.enums.TourStatus;
 import com.epam.finaltask.model.enums.TourType;
 import com.epam.finaltask.model.enums.TransferType;
 
@@ -25,4 +26,6 @@ public interface TourService {
     List<TourDTO> findAllByHotelType(HotelType hotelType);
 
     List<TourDTO> findAll();
+    List<TourDTO> findAllByStatus(TourStatus tourStatus);
+
 }
