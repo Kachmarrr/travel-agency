@@ -25,8 +25,20 @@
                 <a th:href="@{/(lang='uk')}" th:text="#{lang.uk}" rel="alternate" hreflang="uk">Українська</a>
             </div>
 
-            <a sec:authorize="!isAuthenticated()" th:href="@{/auth/login}" class="btn btn-profile">Sign in</a>
-            <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}" class="btn btn-logout">Sign up</a>
+            <a sec:authorize="!isAuthenticated()"
+               th:href="@{/auth/login}"
+               th:text="#{button.signin}"
+               class="btn btn-profile">
+                Sign in
+            </a>
+
+            <a sec:authorize="!isAuthenticated()"
+               th:href="@{/auth/register}"
+               th:text="#{button.signup}"
+               class="btn btn-logout">
+                Sign up
+            </a>
+
         </div>
     </div>
 </nav>
