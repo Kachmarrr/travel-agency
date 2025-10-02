@@ -4,46 +4,62 @@
       lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Travel Agency</title>
+    <title th:text="#{page.title}">Travel Agency</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
 <body>
 
 <!-- Навігаційна панель -->
-<nav class="navbar">
+<nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-container">
         <div class="navbar-left">
-            <a class="navbar-brand" th:href="@{/}">Travel Agency</a>
+            <a class="navbar-brand" th:href="@{/}" th:text="#{app.name}">Travel Agency</a>
         </div>
-        <div class="navbar-right">
-            <span class="balance" th:text="${user != null ? 'Balance: ' + user.balance + ' ₴' : ''}">0 ₴</span>
-            <a th:href="@{/profile}" class="btn btn-profile">Profile</a>
+        <div class="navbar-right" style="display:flex; gap:12px; align-items:center;">
+            <!-- Language switcher -->
+            <div class="lang-switcher" style="display:inline-flex; gap:8px; align-items:center;">
+                <span th:text="#{lang.label}">Language:</span>
+                <a th:href="@{/dashboard(lang='en')}" th:text="#{lang.en}" rel="alternate" hreflang="en">English</a>
+                <span>|</span>
+                <a th:href="@{/dashboard(lang='uk')}" th:text="#{lang.uk}" rel="alternate" hreflang="uk">Українська</a>
+            </div>
+
+
+            <span th:with="balLabel=#{balance.label}"
+                  class="balance"
+                  th:text="${user != null ? balLabel + ' ' + user.balance + ' ₴' : ''}">0 ₴
+            </span>
+
+
+            <a th:href="@{/profile}" class="btn btn-profile" th:text="#{nav.profile}">Profile</a>
 
             <!-- Spring security have default path for log out -->
             <form th:action="@{/logout}" method="post" style="display:inline;">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <button type="submit" class="btn btn-logout">Log out</button>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn btn-logout" th:text="#{nav.logout}">Log out</button>
             </form>
 
             <a sec:authorize="hasAnyRole('MANAGER','ADMIN')"
                th:href="@{|/tours/create|}"
-               class="btn btn-edit">Create new tour</a>
+               class="btn btn-edit"
+               th:text="#{nav.createTour}">Create new tour</a>
         </div>
     </div>
 </nav>
 
 <!-- Контейнер з турами -->
-<div class="container">
-    <h1>Available Tours</h1>
+<div class="container" style="max-width:1100px; margin:24px auto; padding:0 16px;">
+    <h1 th:text="#{page.heading}">Available Tours</h1>
 
-    <div th:if="${#lists.isEmpty(tours)}" class="alert">
+    <div th:if="${#lists.isEmpty(tours)}" class="alert" th:text="#{tours.empty}">
         Currently there are no tours. Check back later.
     </div>
 
     <div class="tours-grid" th:if="${!#lists.isEmpty(tours)}">
         <div class="tour-card" th:each="tour : ${tours}">
             <div class="tour-image">
-                <span>No image</span>
+                <span th:text="#{tour.noImage}">No image</span>
             </div>
 
             <div class="tour-body">
@@ -51,23 +67,25 @@
                 <p class="tour-description" th:text="${tour.description}">Short description</p>
 
                 <div class="tour-footer">
-                    <span class="tour-price" th:text="${tour.price != null ? tour.price + ' ₴' : '—'}">—</span>
-                    <div class="tour-buttons">
-                        <a th:href="@{|/tours/${tour.id}|}" class="btn btn-details">Details</a>
+                    <span class="tour-price"
+                          th:text="${tour.price != null ? tour.price + ' ₴' : '—'}">—</span>
+                    <div class="tour-buttons" style="display:flex; gap:8px; align-items:center;">
 
-                        <!-- Заміна небезпечного GET-посилання на безпечну POST-форму для видалення -->
+                        <a th:href="@{|/tours/${tour.id}|}" class="btn btn-details" th:text="#{btn.details}">Details</a>
+
+                        <!-- Безпечна POST-форма для видалення, confirm повідомлення з i18n -->
                         <form th:action="@{|/tours/delete/${tour.id}|}"
                               method="post"
-                              onsubmit="return confirm('Are you sure you want to delete this tour?');"
-                              sec:authorize="hasAnyRole('MANAGER','ADMIN')">
-                            <!-- CSRF token (Spring Security додає _csrf у модель) -->
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="btn btn-delete">Delete</button>
+                              sec:authorize="hasAnyRole('MANAGER','ADMIN')"
+                              th:attr="onsubmit=|return confirm('#{confirm.delete}')|">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn btn-delete" th:text="#{btn.delete}">Delete</button>
                         </form>
 
                         <a sec:authorize="hasAnyRole('MANAGER','ADMIN')"
                            th:href="@{|/tours/edit/${tour.id}|}"
-                           class="btn btn-edit">Edit</a>
+                           class="btn btn-edit"
+                           th:text="#{btn.edit}">Edit</a>
                     </div>
                 </div>
             </div>

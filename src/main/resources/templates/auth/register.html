@@ -1,10 +1,9 @@
-<!-- src/main/resources/templates/register.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>Register</title>
+    <title th:text="#{register.title}">Register</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -12,8 +11,8 @@
     <div class="login-wrapper">
         <div class="brand">
             <img src="/images/logo.png" alt="logo" class="brand__logo" onerror="this.style.display='none'">
-            <h1 class="brand__title">Create account</h1>
-            <p class="brand__subtitle">Join us — it's quick and easy</p>
+            <h1 class="brand__title" th:text="#{register.brand.title}">Create account</h1>
+            <p class="brand__subtitle" th:text="#{register.brand.subtitle}">Join us — it's quick and easy</p>
         </div>
 
         <div class="card">
@@ -21,28 +20,29 @@
 
             <form class="form" th:action="@{/auth/register}" th:object="${user}" method="post">
                 <div class="form-row">
-                    <label class="form-label" for="username">Username</label>
-                    <input id="username" th:field="*{username}" type="text" class="form-input" placeholder="Username"
-                           required>
+                    <label class="form-label" for="username" th:text="#{register.username}">Username</label>
+                    <input id="username" th:field="*{username}" type="text" class="form-input"
+                           th:placeholder="#{register.username}" required>
                     <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger"></div>
                 </div>
 
                 <div class="form-row">
-                    <label class="form-label" for="email">Email</label>
-                    <input id="email" th:field="*{email}" type="email" class="form-input" placeholder="Email" required>
+                    <label class="form-label" for="email" th:text="#{register.email}">Email</label>
+                    <input id="email" th:field="*{email}" type="email" class="form-input"
+                           th:placeholder="#{register.email}" required>
                     <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
                 </div>
 
                 <div class="form-row">
-                    <label class="form-label" for="password">Password</label>
+                    <label class="form-label" for="password" th:text="#{register.password}">Password</label>
                     <input id="password" th:field="*{password}" type="password" class="form-input"
-                           placeholder="Password" required>
+                           th:placeholder="#{register.password}" required>
                     <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
                 </div>
 
                 <div class="form-actions">
-                    <a th:href="@{/auth/login}" class="link">Already have an account? Login</a>
-                    <button type="submit" class="btn">Register</button>
+                    <a th:href="@{/auth/login}" class="link" th:text="#{register.link.login}">Already have an account? Login</a>
+                    <button type="submit" class="btn" th:text="#{register.button}">Register</button>
                 </div>
             </form>
         </div>

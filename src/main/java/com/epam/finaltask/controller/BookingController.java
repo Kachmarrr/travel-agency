@@ -37,7 +37,7 @@ public class BookingController {
         bookingService.book(tourId, userDTO.getId());
         redirectAttributes.addFlashAttribute("success", "Тур успішно заброньовано!");
 
-        return "redirect:/tours/" + tourId;
+        return "redirect:/profile";
     }
 
     @PostMapping("/cancel/{tourId}")
