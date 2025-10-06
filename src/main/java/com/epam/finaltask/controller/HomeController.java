@@ -17,14 +17,12 @@ public class HomeController {
 
     private final TourService tourService;
     private final UserService userService;
-    private final BookingService bookingService;
 
-    public HomeController(TourService tourService, UserService userService, BookingService bookingService) {
+
+    public HomeController(TourService tourService, UserService userService) {
         this.tourService = tourService;
         this.userService = userService;
-        this.bookingService = bookingService;
     }
-
 
     @GetMapping("/")
     public String index(Model model) {

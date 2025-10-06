@@ -56,7 +56,6 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("You don't have enough money to book this tour!");
         }
 
-        // update balances & status
         user.setBalance(user.getBalance().subtract(price));
         tour.setStatus(TourStatus.PAID);
         tour.setUser(user);
@@ -89,7 +88,6 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("This tour has no associated user, cannot cancel booking");
         }
 
-        // update balances & status
         BigDecimal price = tour.getPrice();
         user.setBalance(user.getBalance().add(price));
 

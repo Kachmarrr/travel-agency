@@ -29,7 +29,7 @@ public class ApplicationConfig implements WebMvcConfigurer {
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
         slr.setDefaultLocale(new Locale("en"));
-//        slr.setDefaultLocale(new Locale("uk")); //
+//        slr.setDefaultLocale(new Locale("uk"));
         return slr;
     }
 

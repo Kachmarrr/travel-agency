@@ -25,14 +25,18 @@
                 <a th:href="@{/dashboard(lang='uk')}" th:text="#{lang.uk}" rel="alternate" hreflang="uk">Українська</a>
             </div>
 
-
             <span th:with="balLabel=#{balance.label}"
                   class="balance"
                   th:text="${user != null ? balLabel + ' ' + user.balance + ' ₴' : ''}">0 ₴
             </span>
 
-
             <a th:href="@{/profile}" class="btn btn-profile" th:text="#{nav.profile}">Profile</a>
+
+            <!-- Кнопка для ADMIN: переход до списку користувачів -->
+            <a sec:authorize="hasRole('ADMIN')"
+               th:href="@{/users}"
+               class="btn btn-edit"
+               th:text="#{nav.adminUsers}">Users</a>
 
             <!-- Spring security have default path for log out -->
             <form th:action="@{/logout}" method="post" style="display:inline;">

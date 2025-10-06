@@ -34,7 +34,7 @@ public class UserDTO {
 	@Builder.Default
 	private Double balance = 0.0;
 
-	// Ініціалізація порожнім списком, щоб уникнути NPE при .stream()
+	// initialization empty list, to avoid NPE when .stream()
 	@Builder.Default
 	private List<TourDTO> tours = new ArrayList<>();
 }

@@ -63,8 +63,8 @@
 
             <!-- Інформація про користувача (видно лише менеджеру) -->
             <div class="list-group-item" sec:authorize="hasRole('MANAGER')">
-                <strong th:text="#{tour.bookedBy}">Booked by:</strong>
-                <span th:text="${user != null ? user.getUsername + ' (' + user.getEmail() + ')' : #{tour.notBooked}}">Not booked</span>
+                <span th:if="${user != null}" th:text="${user.getUsername() + ' (' + user.getEmail() + ')'}">Not booked</span>
+                <span th:unless="${user != null}" th:text="#{tour.notBooked}">Not booked</span>
             </div>
         </div>
 

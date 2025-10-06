@@ -29,7 +29,6 @@ public class UserMapperImpl implements UserMapper {
                 .role(dto.getRole())
                 .balance(BigDecimal.valueOf(dto.getBalance()))
                 .tours(dto.getTours().stream().map(tourDTO -> tourMapper.toTour(tourDTO)).toList())
-//                .active(Boolean.TRUE.equals(dto.isActive()))
                 .build();
 
         return user;
@@ -42,12 +41,11 @@ public class UserMapperImpl implements UserMapper {
         UserDTO userDTO = UserDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-//                .password(user.getPassword()) // чи варто так робити ?
+//                .password(user.getPassword())
                 .email(user.getEmail())
                 .role(user.getRole())
                 .balance(user.getBalance().doubleValue())
                 .tours(user.getTours().stream().map(tour -> tourMapper.toTourDTO(tour)).toList())
-//                .active(user.isActive())
                 .build();
 
         return userDTO;

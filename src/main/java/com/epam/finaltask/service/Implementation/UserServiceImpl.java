@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @Transactional
@@ -168,5 +170,12 @@ public class UserServiceImpl implements UserService {
 
 		log.info("Get user by email successful: email={}, userId={}", email, userDTO.getId());
 		return userDTO;
+	}
+
+	@Override
+	public List<UserDTO> findAllUsers() {
+		return userRepository.findAll().stream()
+				.map(userMapper::toUserDTO)
+				.toList();
 	}
 }

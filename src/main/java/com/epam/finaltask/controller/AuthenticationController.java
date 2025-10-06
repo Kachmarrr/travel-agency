@@ -43,35 +43,29 @@ public class AuthenticationController {
                            BindingResult result,
                            RedirectAttributes redirectAttributes) {
 
-        // 1) валідація полів
+        // 1. (validation)
         if (result.hasErrors()) {
             return "auth/register";
         }
 
-        // 2) перевірка email
+        // 2. (email.check)
         try {
             userService.getUserByEmail(userDTO.getEmail());
-            // якщо не кинуло - такий email існує
             result.rejectValue("email", "error.user", "Email already in use");
             return "auth/register";
-        } catch (NotFoundException ignored) {
-            // OK — email вільний
-        }
+        } catch (NotFoundException ignored) {}
 
-        // 3) перевірка username
+        // 3. (username.check)
         try {
             userService.getUserByUsername(userDTO.getUsername());
             result.rejectValue("username", "error.user", "Username already in use");
             return "auth/register";
-        } catch (NotFoundException ignored) {
-            // OK — username вільний
-        }
+        } catch (NotFoundException ignored) {}
 
-
-        // 4) зберегти користувача
+        // 4. (save user)
         userService.register(userDTO);
 
-        // повідомлення для користувача після редіректу
+        // message for user after redirect
         redirectAttributes.addFlashAttribute("success", "Registration successful. Please log in.");
         return "redirect:/auth/login";
     }
