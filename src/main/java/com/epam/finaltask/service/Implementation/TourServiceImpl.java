@@ -1,7 +1,10 @@
 package com.epam.finaltask.service.Implementation;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.epam.finaltask.DTO.TourDTO;
 import com.epam.finaltask.exception.BadRequestException;
@@ -17,6 +20,9 @@ import com.epam.finaltask.repository.TourRepository;
 import com.epam.finaltask.repository.UserRepository;
 import com.epam.finaltask.service.TourService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -250,6 +256,45 @@ public class TourServiceImpl implements TourService {
                 .toList();
         log.info("Found {} tours in total", tours.size());
         return tours;
-
     }
+
+    @Override
+    public Page<TourDTO> findAllFilteredAndSorted(TourType tourType,
+                                                  HotelType hotelType,
+                                                  TransferType transferType,
+                                                  Pageable pageable,
+                                                  boolean isManager) {
+        log.info("findAllFilteredAndSorted called: tourType={}, hotelType={}, transferType={}, pageable={}, showAll={}",
+                tourType, hotelType, transferType, pageable, isManager);
+
+        try {
+            Specification<Tour> spec = Stream.of(
+                            Optional.ofNullable(tourType).map(tt -> (Specification<Tour>) (root, query, cb) -> cb.equal(root.get("tourType"), tt)),
+                            Optional.ofNullable(hotelType).map(ht -> (Specification<Tour>) (root, query, cb) -> cb.equal(root.get("hotelType"), ht)),
+                            Optional.ofNullable(transferType).map(tt -> (Specification<Tour>) (root, query, cb) -> cb.equal(root.get("transferType"), tt))
+                    )
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .reduce(Specification::and)
+                    .orElse(null);
+
+            if (!isManager) {
+                Specification<Tour> statusSpec = (root, query, cb) -> cb.equal(root.get("status"), TourStatus.AVAILABLE);
+                spec = (spec == null) ? statusSpec : spec.and(statusSpec);
+            }
+
+            Page<TourDTO> result = tourRepository.findAll(spec, pageable)
+                    .map(tourMapper::toTourDTO);
+
+            log.info("Found page: number={}, size={}, totalElements={}",
+                    result.getNumber(), result.getSize(), result.getTotalElements());
+
+            return result;
+        } catch (Exception e) {
+            log.error("Error in findAllFilteredAndSorted", e);
+            throw e;
+        }
+    }
+
+
 }

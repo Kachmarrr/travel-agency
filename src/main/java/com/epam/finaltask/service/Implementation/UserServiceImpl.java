@@ -178,4 +178,12 @@ public class UserServiceImpl implements UserService {
 				.map(userMapper::toUserDTO)
 				.toList();
 	}
+
+	@Override
+	public List<UserDTO> findUsersByRole(Role role) {
+		return userRepository.findUsersByRole(role)
+				.stream()
+				.map(userMapper::toUserDTO)
+				.toList();
+	}
 }

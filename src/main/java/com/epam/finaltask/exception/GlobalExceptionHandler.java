@@ -1,18 +1,24 @@
 package com.epam.finaltask.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Для 404 — показуємо сторінку помилки з кодом 404
     @ExceptionHandler(NotFoundException.class)
-    public String handleNotFound(NotFoundException exception, Model model, HttpServletResponse response) {
+    public String handleNotFound(NotFoundException exception,
+                                 HttpServletResponse response,
+                                 org.springframework.ui.Model model) {
         response.setStatus(HttpStatus.NOT_FOUND.value());
         model.addAttribute("errorMessage", exception.getMessage());
 
@@ -22,12 +28,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public String handleBadRequest(BadRequestException exception, Model model, HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        model.addAttribute("errorMessage", exception.getMessage());
+    public String handleBadRequest(BadRequestException exception,
+                                   RedirectAttributes redirectAttributes,
+                                   HttpServletRequest request) {
+        // Add flash-massage
+        redirectAttributes.addFlashAttribute("error", exception.getMessage());
 
-        log.error("BadRequestException: {}", exception.getMessage(), exception);
+        log.warn("BadRequestException: {}", exception.getMessage(), exception);
 
-        return "error/404";
+        String referer = request.getHeader("Referer");
+        if (referer != null && !referer.isBlank()) {
+            return "redirect:" + referer;
+        } else {
+            return "redirect:/profile";
+        }
     }
 }

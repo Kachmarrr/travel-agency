@@ -11,8 +11,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.epam.finaltask.model.enums.HotelType;
 import com.epam.finaltask.model.enums.TourType;
 import com.epam.finaltask.model.enums.TransferType;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface TourRepository extends JpaRepository<Tour, Long> {
+public interface TourRepository extends JpaRepository<Tour, Long>, JpaSpecificationExecutor<Tour> {
     List<Tour> findAllByUserId(Long userId);
     List<Tour> findAllByTourType(TourType tourType);
     List<Tour> findAllByTransferType(TransferType transferType);

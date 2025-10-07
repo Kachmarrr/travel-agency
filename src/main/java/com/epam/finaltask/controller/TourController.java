@@ -52,10 +52,12 @@ public class TourController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/create")
-    public String create(@ModelAttribute("tourDTO") TourDTO tourDTO) {
+    public String createTour(@Valid @ModelAttribute("tourDTO") TourDTO tourDTO,
+                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) return "tours/create";
 
         tourService.create(tourDTO);
-
         return "redirect:/dashboard";
     }
 
@@ -73,9 +75,7 @@ public class TourController {
                          @Valid @ModelAttribute("tour") TourDTO tourDTO,
                          BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
-            return "tours/edit";
-        }
+        if (bindingResult.hasErrors()) return "tours/edit";
 
         tourDTO.setId(id);
         tourService.update(tourDTO);

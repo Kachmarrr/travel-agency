@@ -1,6 +1,7 @@
 package com.epam.finaltask.controller;
 
 import com.epam.finaltask.DTO.UserDTO;
+import com.epam.finaltask.model.User;
 import com.epam.finaltask.model.enums.Role;
 import com.epam.finaltask.service.UserService;
 import lombok.AllArgsConstructor;
@@ -25,8 +26,10 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public String findAllUsers(Model model) {
-        List<UserDTO> users = userService.findAllUsers();
+        List<UserDTO> users = userService.findUsersByRole(Role.USER);
+        List<UserDTO> managers = userService.findUsersByRole(Role.MANAGER);
         model.addAttribute("users", users);
+        model.addAttribute("managers", managers);
         return "user/admin";
     }
 
@@ -45,4 +48,6 @@ public class UserController {
         ra.addFlashAttribute("success", "User role updated");
         return "redirect:/users";
     }
+
+
 }

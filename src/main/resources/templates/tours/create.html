@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      lang="en">
+      lang="uk">
 <head>
     <meta charset="UTF-8"/>
     <title th:text="#{tour.create.title}">Create Tour</title>
@@ -13,16 +13,7 @@
 <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-container">
         <a class="navbar-brand" th:href="@{/}" th:text="#{app.name}">Travel Agency</a>
-
         <div class="navbar-right">
-            <!-- Language switcher: simple GET param ?lang=uk or ?lang=en (Spring LocaleChangeInterceptor) -->
-            <div class="lang-switcher" style="display:inline-flex; gap:8px; align-items:center; margin-right:12px;">
-                <span th:text="#{lang.label}">Language:</span>
-                <a th:href="@{/?(lang='en')}" th:text="#{lang.en}" rel="alternate" hreflang="en">English</a>
-                |
-                <a th:href="@{/?(lang='uk')}" th:text="#{lang.uk}" rel="alternate" hreflang="uk">Українська</a>
-            </div>
-
             <a th:href="@{/user/profile}" class="btn btn-profile" th:text="#{nav.profile}">Profile</a>
             <a th:href="@{/logout}" class="btn btn-logout" th:text="#{nav.logout}">Log out</a>
         </div>
@@ -30,19 +21,23 @@
 </nav>
 
 <div class="container create-tour" style="max-width:960px; margin:24px auto; padding:0 16px;">
-
     <h1 th:text="#{tour.create.heading}">Create New Tour</h1>
 
     <!-- Only managers see the form -->
     <div sec:authorize="hasRole('MANAGER')">
 
         <div class="card create-card" style="padding:16px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+            <!-- th:object повинен відповідати імені modelAttribute з контролера (наприклад "tourDTO") -->
             <form th:action="@{/tours/create}" th:object="${tourDTO}" method="post" novalidate>
 
                 <!-- CSRF token -->
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-                <!-- Grid -->
+                <!-- Глобальний блок помилок -->
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert" style="margin-bottom:16px;">
+                    <p th:text="#{form.validation.errors}">Будь ласка, виправте помилки в формі.</p>
+                </div>
+
                 <div class="form-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
 
                     <!-- Title -->
@@ -54,7 +49,9 @@
                                th:field="*{title}"
                                th:placeholder="#{form.placeholder.title}"
                                required
-                               aria-required="true"/>
+                               aria-required="true"
+                               aria-invalid="${#fields.hasErrors('title')}"/>
+                        <div class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                     </div>
 
                     <!-- Price -->
@@ -68,7 +65,9 @@
                                step="0.01"
                                th:placeholder="#{form.placeholder.price}"
                                required
-                               aria-required="true"/>
+                               aria-required="true"
+                               aria-invalid="${#fields.hasErrors('price')}"/>
+                        <div class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
                     </div>
 
                     <!-- Description full width -->
@@ -80,72 +79,88 @@
                                   th:placeholder="#{form.placeholder.description}"
                                   rows="4"
                                   required
-                                  aria-required="true"></textarea>
+                                  aria-required="true"
+                                  aria-invalid="${#fields.hasErrors('description')}"></textarea>
+                        <div class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                     </div>
 
-                    <!-- TourType select -->
+                    <!-- TourType -->
                     <div class="form-group">
                         <label for="tourType" th:text="#{form.label.tourType}">Tour Type</label>
-                        <select class="form-input" id="tourType" th:field="*{tourType}" required>
+                        <select class="form-input" id="tourType" th:field="*{tourType}" required
+                                aria-required="true" aria-invalid="${#fields.hasErrors('tourType')}">
                             <option value="" th:text="#{form.select.default}">-- Select tour type --</option>
                             <option th:each="t : ${T(com.epam.finaltask.model.enums.TourType).values()}"
                                     th:value="${t.name()}"
-                                    th:text="#{tour.type.${t.name()}}">
+                                    th:text="${t.name()}">
                             </option>
                         </select>
+                        <div class="field-error" th:if="${#fields.hasErrors('tourType')}" th:errors="*{tourType}"></div>
                     </div>
 
-                    <!-- TransferType select -->
+                    <!-- TransferType -->
                     <div class="form-group">
                         <label for="transferType" th:text="#{form.label.transferType}">Transfer Type</label>
-                        <select class="form-input" id="transferType" th:field="*{transferType}" required>
+                        <select class="form-input" id="transferType" th:field="*{transferType}" required
+                                aria-required="true" aria-invalid="${#fields.hasErrors('transferType')}">
                             <option value="" th:text="#{form.select.default}">-- Select transfer type --</option>
                             <option th:each="tr : ${T(com.epam.finaltask.model.enums.TransferType).values()}"
                                     th:value="${tr.name()}"
-                                    th:text="#{transfer.type.${tr.name()}}">
+                                    th:text="${tr.name()}">
                             </option>
                         </select>
+                        <div class="field-error" th:if="${#fields.hasErrors('transferType')}" th:errors="*{transferType}"></div>
                     </div>
 
-                    <!-- HotelType select -->
+                    <!-- HotelType -->
                     <div class="form-group">
                         <label for="hotelType" th:text="#{form.label.hotelType}">Hotel Type</label>
-                        <select class="form-input" id="hotelType" th:field="*{hotelType}" required>
+                        <select class="form-input" id="hotelType" th:field="*{hotelType}" required
+                                aria-required="true" aria-invalid="${#fields.hasErrors('hotelType')}">
                             <option value="" th:text="#{form.select.default}">-- Select hotel type --</option>
                             <option th:each="h : ${T(com.epam.finaltask.model.enums.HotelType).values()}"
                                     th:value="${h.name()}"
-                                    th:text="#{hotel.type.${h.name()}}">
+                                    th:text="${h.name()}">
                             </option>
                         </select>
+                        <div class="field-error" th:if="${#fields.hasErrors('hotelType')}" th:errors="*{hotelType}"></div>
                     </div>
 
-                    <!-- Status select -->
+                    <!-- Status -->
                     <div class="form-group">
                         <label for="status" th:text="#{form.label.status}">Status</label>
-                        <select class="form-input" id="status" th:field="*{status}" required>
+                        <select class="form-input" id="status" th:field="*{status}" required
+                                aria-required="true" aria-invalid="${#fields.hasErrors('status')}">
                             <option value="" th:text="#{form.select.default}">-- Select status --</option>
                             <option th:each="s : ${T(com.epam.finaltask.model.enums.TourStatus).values()}"
                                     th:value="${s.name()}"
-                                    th:text="#{tour.status.${s.name()}}">
+                                    th:text="${s.name()}">
                             </option>
                         </select>
+                        <div class="field-error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
                     </div>
 
-                    <!-- Dates -->
+                    <!-- Arrival Date -->
                     <div class="form-group">
                         <label for="arrivalDate" th:text="#{form.label.arrivalDate}">Arrival Date</label>
-                        <input class="form-input" type="date" id="arrivalDate" th:field="*{arrivalDate}" required/>
+                        <input class="form-input" type="date" id="arrivalDate" th:field="*{arrivalDate}" required
+                               aria-required="true" aria-invalid="${#fields.hasErrors('arrivalDate')}"/>
+                        <div class="field-error" th:if="${#fields.hasErrors('arrivalDate')}" th:errors="*{arrivalDate}"></div>
                     </div>
 
+                    <!-- Eviction Date -->
                     <div class="form-group">
                         <label for="evictionDate" th:text="#{form.label.evictionDate}">Eviction Date</label>
-                        <input class="form-input" type="date" id="evictionDate" th:field="*{evictionDate}" required/>
+                        <input class="form-input" type="date" id="evictionDate" th:field="*{evictionDate}" required
+                               aria-required="true" aria-invalid="${#fields.hasErrors('evictionDate')}"/>
+                        <div class="field-error" th:if="${#fields.hasErrors('evictionDate')}" th:errors="*{evictionDate}"></div>
                     </div>
 
                     <!-- Hot tour checkbox -->
                     <div class="form-group" style="display:flex; align-items:center; gap:8px;">
                         <input type="checkbox" id="isHot" th:field="*{isHot}" />
                         <label for="isHot" style="margin:0;" th:text="#{form.label.hotTour}">Hot Tour</label>
+                        <div class="field-error" th:if="${#fields.hasErrors('isHot')}" th:errors="*{isHot}"></div>
                     </div>
 
                     <!-- Hidden userId -->

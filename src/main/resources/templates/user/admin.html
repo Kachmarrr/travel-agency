@@ -43,13 +43,10 @@
 <div class="container">
     <div class="create-card">
 
-        <!-- Flash / error messages: використовуємо model attributes, а не #fields -->
+        <!-- Flash / error messages -->
         <div class="flash">
             <div th:if="${success}" class="alert alert--success" th:text="${success}"></div>
-
             <div th:if="${error}" class="alert alert--danger" th:text="${error}"></div>
-
-            <!-- Якщо контролер додає list/array під ключем 'errors' -->
             <div th:if="${errors != null}">
                 <div class="alert alert--danger">
                     <ul>
@@ -59,17 +56,50 @@
             </div>
         </div>
 
-        <h1 th:text="#{users.list.title}">Users</h1>
+        <h1 th:text="#{users.list.title}">All Users</h1>
 
-        <!-- Локалізовані шаблони повідомлень (в data-атрибутах) -->
-        <div id="i18n"
-             th:data-make-msg="#{confirm.makeManager}"
-             th:data-remove-msg="#{confirm.removeManager}"
-             style="display:none"></div>
-
-        <div th:if="${#lists.isEmpty(users)}" class="no-access" th:text="#{users.noUsers}">
-            No users found
+        <!-- Менеджери спершу -->
+        <h2 th:text="#{users.managers.title}">Managers</h2>
+        <div th:if="${#lists.isEmpty(managers)}" class="no-access" th:text="#{users.noManagers}">No managers found</div>
+        <div class="users-grid" th:if="${!#lists.isEmpty(managers)}">
+            <table class="users-table card">
+                <thead>
+                <tr>
+                    <th th:text="#{users.table.username}">Username</th>
+                    <th th:text="#{users.table.email}">Email</th>
+                    <th th:text="#{users.table.balance}">Balance</th>
+                    <th th:text="#{users.table.tours}">Tours</th>
+                    <th th:text="#{users.table.actions}">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="mgr : ${managers}" class="user-row">
+                    <td>
+                        <div class="card-title" th:text="${mgr.username}">username</div>
+                        <div class="form-hint" th:text="'#' + ${mgr.id}">#id</div>
+                    </td>
+                    <td><div th:text="${mgr.email}">email@example.com</div></td>
+                    <td><div th:text="${mgr.balance}">0.0</div></td>
+                    <td><div th:text="${mgr.tours != null ? mgr.tours.size() : 0}">0</div></td>
+                    <td>
+                        <div class="actions">
+                            <form th:action="@{/users/{id}/remove-manager(id=${mgr.id})}" method="post"
+                                  th:attr="data-username=${mgr.username}" onsubmit="return confirmRemove(this)">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="btn btn-outline-secondary" th:text="#{users.button.removeManager}">Remove</button>
+                            </form>
+                            <a th:href="@{/users/profile/{id}(id=${mgr.id})}" class="link" th:text="#{users.button.view}">View</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
+
+        <!-- Потім всі користувачі -->
+        <h1 th:text="#{users.list.title}">All Users</h1>
+
+        <div th:if="${#lists.isEmpty(users)}" class="no-access" th:text="#{users.noUsers}">No users found</div>
 
         <div class="users-grid" th:if="${!#lists.isEmpty(users)}">
             <table class="users-table card">
@@ -89,49 +119,32 @@
                         <div class="card-title" th:text="${user.username}">username</div>
                         <div class="form-hint" th:text="'#' + ${user.id}">#id</div>
                     </td>
-
+                    <td><div th:text="${user.email}">email@example.com</div></td>
+                    <td><div th:text="${user.balance}">0.0</div></td>
+                    <td><div th:text="${user.tours != null ? user.tours.size() : 0}">0</div></td>
                     <td>
-                        <div th:text="${user.email}">email@example.com</div>
+                <span th:switch="${user.role != null ? user.role.name() : 'USER'}">
+                    <span th:case="'ADMIN'" class="role-badge role-admin" th:text="#{role.ADMIN}">ADMIN</span>
+                    <span th:case="'MANAGER'" class="role-badge role-manager" th:text="#{role.MANAGER}">MANAGER</span>
+                    <span th:case="*" class="role-badge role-user" th:text="#{role.USER}">USER</span>
+                </span>
                     </td>
-
-                    <td>
-                        <div th:text="${user.balance}">0.0</div>
-                    </td>
-
-                    <td>
-                        <div th:text="${user.tours != null ? user.tours.size() : 0}">0</div>
-                    </td>
-
-                    <td>
-              <span th:switch="${user.role != null ? user.role.name() : 'USER'}">
-                <span th:case="'ADMIN'" class="role-badge role-admin" th:text="#{role.ADMIN}">ADMIN</span>
-                <span th:case="'MANAGER'" class="role-badge role-manager" th:text="#{role.MANAGER}">MANAGER</span>
-                <span th:case="*" class="role-badge role-user" th:text="#{role.USER}">USER</span>
-              </span>
-                    </td>
-
                     <td>
                         <div class="actions">
-                            <!-- Make manager -->
                             <form th:if="${user.role == null or user.role.name() != 'MANAGER'}"
                                   th:action="@{/users/{id}/make-manager(id=${user.id})}"
-                                  method="post"
-                                  th:attr="data-username=${user.username}"
+                                  method="post" th:attr="data-username=${user.username}"
                                   onsubmit="return confirmMake(this)">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                 <button type="submit" class="btn btn-outline-primary" th:text="#{users.button.makeManager}">Make manager</button>
                             </form>
-
-                            <!-- Remove manager -->
                             <form th:if="${user.role != null and user.role.name() == 'MANAGER'}"
                                   th:action="@{/users/{id}/remove-manager(id=${user.id})}"
-                                  method="post"
-                                  th:attr="data-username=${user.username}"
+                                  method="post" th:attr="data-username=${user.username}"
                                   onsubmit="return confirmRemove(this)">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                 <button type="submit" class="btn btn-outline-secondary" th:text="#{users.button.removeManager}">Remove</button>
                             </form>
-
                             <a th:href="@{/users/profile/{id}(id=${user.id})}" class="link" th:text="#{users.button.view}">View</a>
                         </div>
                     </td>
@@ -140,9 +153,6 @@
             </table>
         </div>
 
-        <div class="card-footer">
-            <small th:text="#{admin.footer}">Admin panel</small>
-        </div>
     </div>
 </div>
 

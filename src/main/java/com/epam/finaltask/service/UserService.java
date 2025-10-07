@@ -21,4 +21,6 @@ public interface UserService {
 
     List<UserDTO> findAllUsers();
 
+    List<UserDTO> findUsersByRole(Role role);
+
 }

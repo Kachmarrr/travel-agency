@@ -29,20 +29,26 @@ public class TourDTO {
     @NotBlank(message = "description is must be blank")
     private String description;
 
-	@NotNull(message = "price must be required")
-	@PositiveOrZero(message = "price must be zero or positive")
+    @NotNull(message = "Price is required")
+    @PositiveOrZero(message = "Price must be zero or positive")
     private Double price;
 
+    @NotNull(message = "TourType is required")
     private TourType tourType;
 
+    @NotNull(message = "TransferType is required")
     private TransferType transferType;
 
+    @NotNull(message = "HotelType is required")
     private HotelType hotelType;
 
+    @NotNull(message = "TourStatus is required")
     private TourStatus status;
 
+    @NotNull(message = "Arrival date is required")
     private LocalDate arrivalDate;
 
+    @NotNull(message = "Eviction date is required")
     private LocalDate evictionDate;
 
     private Long userId;

@@ -38,7 +38,6 @@
                class="btn btn-logout">
                 Sign up
             </a>
-
         </div>
     </div>
 </nav>
@@ -47,12 +46,58 @@
 <div class="container" style="max-width:1100px; margin:24px auto; padding:0 16px;">
     <h1 th:text="#{page.heading}">Available Tours</h1>
 
+    <!-- Sort & Filter Panel -->
+    <details class="sort-panel" role="group" aria-label="Sort tours">
+        <summary class="sort-summary" aria-expanded="false">Sort & View ▾</summary>
+        <div class="sort-content">
+            <form th:action="@{/dashboard}" method="get" class="sort-form">
+                <input type="hidden" name="tourType" th:value="${tourType}"/>
+                <input type="hidden" name="hotelType" th:value="${hotelType}"/>
+                <input type="hidden" name="transferType" th:value="${transferType}"/>
+
+                <div class="sort-row">
+                    <label class="sort-label" th:text="#{filters.sortBy}">Sort by</label>
+                    <select name="sortField" class="form-input" id="sortField">
+                        <option value="price" th:selected="${sortField == 'price'}" th:text="#{filters.price}">Price</option>
+                        <option value="arrivalDate" th:selected="${sortField == 'arrivalDate'}" th:text="#{filters.arrivalDate}">Arrival Date</option>
+                        <option value="title" th:selected="${sortField == 'title'}" th:text="#{filters.title}">Title</option>
+                    </select>
+
+                    <label class="sort-label" th:text="#{filters.direction}">Direction</label>
+                    <select name="sortDir" class="form-input" id="sortDir">
+                        <option value="asc" th:selected="${sortDir == 'asc'}" th:text="#{filters.asc}">Ascending</option>
+                        <option value="desc" th:selected="${sortDir == 'desc'}" th:text="#{filters.desc}">Descending</option>
+                    </select>
+
+                    <div class="sort-actions">
+                        <button type="submit" class="btn btn-primary" th:text="#{filters.apply}">Apply</button>
+                        <a th:href="@{/dashboard}" class="btn btn-outline-secondary" th:text="#{filters.reset}">Reset</a>
+                    </div>
+                </div>
+
+                <!-- Quick Sort Links -->
+                <div class="sort-quick">
+                    <span class="small">Quick:</span>
+                    <a th:href="@{/dashboard(sortField='price', sortDir='asc', tourType=${tourType}, hotelType=${hotelType}, transferType=${transferType})}"
+                       class="sort-btn" title="Price ↑">Price ↑</a>
+                    <a th:href="@{/dashboard(sortField='price', sortDir='desc', tourType=${tourType}, hotelType=${hotelType}, transferType=${transferType})}"
+                       class="sort-btn" title="Price ↓">Price ↓</a>
+                    <a th:href="@{/dashboard(sortField='arrivalDate', sortDir='asc', tourType=${tourType}, hotelType=${hotelType}, transferType=${transferType})}"
+                       class="sort-btn" title="Arrival ↑">Arrival ↑</a>
+                    <a th:href="@{/dashboard(sortField='arrivalDate', sortDir='desc', tourType=${tourType}, hotelType=${hotelType}, transferType=${transferType})}"
+                       class="sort-btn" title="Arrival ↓">Arrival ↓</a>
+                </div>
+            </form>
+        </div>
+    </details>
+
+    <!-- Список турів -->
     <div th:if="${#lists.isEmpty(tours)}" class="alert" th:text="#{tours.empty}">
         Currently there are no tours. Check back later.
     </div>
 
-    <div class="tours-grid" th:if="${!#lists.isEmpty(tours)}">
-        <div class="tour-card" th:each="tour : ${tours}">
+    <div class="tours-grid" th:if="${!#lists.isEmpty(tours.content)}">
+        <div class="tour-card" th:each="tour : ${tours.content}">
             <div class="tour-image">
                 <span th:text="#{tour.noImage}">No image</span>
             </div>
@@ -62,25 +107,9 @@
                 <p class="tour-description" th:text="${tour.description}">Short description</p>
 
                 <div class="tour-footer">
-                    <span class="tour-price"
-                          th:text="${tour.price != null ? tour.price + ' ₴' : '—'}">—</span>
-                    <div class="tour-buttons" style="display:flex; gap:8px; align-items:center;">
-
+                    <span class="tour-price" th:text="${tour.price != null ? tour.price + ' ₴' : '—'}">—</span>
+                    <div class="tour-buttons" style="display:flex; gap:8px;">
                         <a th:href="@{|/tours/${tour.id}|}" class="btn btn-details" th:text="#{btn.details}">Details</a>
-
-                        <!-- Безпечна POST-форма для видалення, confirm повідомлення з i18n -->
-                        <form th:action="@{|/tours/delete/${tour.id}|}"
-                              method="post"
-                              sec:authorize="hasAnyRole('MANAGER','ADMIN')"
-                              th:attr="onsubmit=|return confirm('#{confirm.delete}')|">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                            <button type="submit" class="btn btn-delete" th:text="#{btn.delete}">Delete</button>
-                        </form>
-
-                        <a sec:authorize="hasAnyRole('MANAGER','ADMIN')"
-                           th:href="@{|/tours/edit/${tour.id}|}"
-                           class="btn btn-edit"
-                           th:text="#{btn.edit}">Edit</a>
                     </div>
                 </div>
             </div>
@@ -90,6 +119,32 @@
             </div>
         </div>
     </div>
+
+    <!-- Pagination -->
+    <nav class="pagination-nav" th:if="${tours != null and tours.totalPages > 1}" aria-label="Page navigation">
+        <ul class="pagination">
+            <!-- Prev -->
+            <li th:classappend="${tours.first} ? 'disabled'">
+                <a th:if="${!tours.first}"
+                   th:href="@{/dashboard(page=${tours.number-1}, size=${tours.size}, tourType=${tourType}, hotelType=${hotelType}, transferType=${transferType}, sortField=${sortField}, sortDir=${sortDir})}">←</a>
+                <span th:if="${tours.first}">←</span>
+            </li>
+
+            <!-- Pages -->
+            <li th:each="i : ${#numbers.sequence(0, tours.totalPages-1)}"
+                th:classappend="${i == tours.number} ? 'active'">
+                <a th:href="@{/dashboard(page=${i}, size=${tours.size}, tourType=${tourType}, hotelType=${hotelType}, transferType=${transferType}, sortField=${sortField}, sortDir=${sortDir})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+
+            <!-- Next -->
+            <li th:classappend="${tours.last} ? 'disabled'">
+                <a th:if="${!tours.last}"
+                   th:href="@{/dashboard(page=${tours.number+1}, size=${tours.size}, tourType=${tourType}, hotelType=${hotelType}, transferType=${transferType}, sortField=${sortField}, sortDir=${sortDir})}">→</a>
+                <span th:if="${tours.last}">→</span>
+            </li>
+        </ul>
+    </nav>
 </div>
 
 </body>
